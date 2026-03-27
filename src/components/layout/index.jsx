@@ -1,9 +1,32 @@
-import { Heart, HomeIcon, Search, ShoppingCart, User } from 'lucide-react';
+import {
+  ChevronDown,
+  Heart,
+  HomeIcon,
+  Search,
+  ShoppingCart,
+  User,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
+import useAxios from '../../hooks/useAxios';
+import useSetArrayQuery from 'hooks/useSetArrayQuery';
 
 function Layout() {
   const { t } = useTranslation();
+  const axios = useAxios();
+  const { search } = useLocation();
+  const setQuery = useSetArrayQuery();
+
+  const regions = useQuery({
+    queryKey: ['/dashboard/regions'],
+    queryFn: async () => {
+      const res = await axios.get('/dashboard/regions');
+      return res?.data?.data;
+    },
+  });
+
   return (
     <div className='bg-surface font-body text-on-surface h-dvh'>
       <header className='fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm font-headline antialiased tracking-tight'>
@@ -50,7 +73,24 @@ function Layout() {
             </NavLink>
           </nav>
           <div className='flex items-center gap-4'>
-            <button className='p-2 text-on-surface hover:bg-[#3622F2]/5 rounded-full transition-transform active:scale-95'>
+            <div className='relative'>
+              <div
+                className={
+                  'w-fit px-3 pr-1 h-7 rounded-md border border-gray-200 bg-white shadow-sm flex items-center justify-between gap-2 hover:bg-primary hover:text-white transition-all duration-300 relative'
+                }
+              >
+                {'And'}
+                <ChevronDown size={18} color='#a9a9a9' />
+              </div>
+              <div className='absolute top-full bg-white mt-1 shadow-md rounded-md'>
+                {regions?.data?.map((region) => (
+                  <div className='whitespace-nowrap p-1 px-2' key={region?.id}>
+                    {region?.name}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* <button className='p-2 text-on-surface hover:bg-[#3622F2]/5 rounded-full transition-transform active:scale-95'>
               <span className='material-symbols-outlined' data-icon='favorite'>
                 favorite
               </span>
@@ -71,7 +111,7 @@ function Layout() {
               >
                 account_circle
               </span>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>

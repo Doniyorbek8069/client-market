@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
 import { LoaderPinwheel } from 'lucide-react';
+import useSetArrayQuery from 'hooks/useSetArrayQuery';
+import hasQuery from 'hooks/hasQuery';
+
 // api/dashboard/regions
 // api/dashboard/units
 // api/dashboard/categories
@@ -13,17 +16,20 @@ import { LoaderPinwheel } from 'lucide-react';
 
 function All() {
   const axios = useAxios();
-  // const categories = useQuery({
-  //   queryKey: ['/dashboard/categories'],
-  //   queryFn: async () => {
-  //     const res = await axios.get('/dashboard/categories');
-  //     return res?.data?.data;
-  //   },
-  // });
-  const products = useQuery({
-    queryKey: ['/dashboard/products'],
+  const { search } = useLocation();
+  const setQuery = useSetArrayQuery();
+
+  const categories = useQuery({
+    queryKey: ['/dashboard/categories'],
     queryFn: async () => {
-      const res = await axios.get('/dashboard/products');
+      const res = await axios.get('/dashboard/categories');
+      return res?.data?.data;
+    },
+  });
+  const products = useQuery({
+    queryKey: ['/dashboard/products', search],
+    queryFn: async () => {
+      const res = await axios.get(`/dashboard/products${search}`);
       return res?.data?.data;
     },
   });
@@ -45,66 +51,26 @@ function All() {
       </section>
       <section className='mb-10 overflow-hidden'>
         <div className='flex gap-4 overflow-x-auto hide-scrollbar pb-4'>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                construction
+          {categories?.data?.map((item) => (
+            <div
+              key={item?.id}
+              className={
+                'flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'
+              }
+              onClick={() => setQuery('category_ids', item?.id)}
+            >
+              <div
+                className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-primary text-white' : ''}`}
+              >
+                <span className='material-symbols-outlined text-3xl'>
+                  construction
+                </span>
+              </div>
+              <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
+                {item?.name}
               </span>
             </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Cement
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                rebase_edit
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Brick
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                hardware
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Metal
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                format_paint
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Paint
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                handyman
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Tools
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                engineering
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Services
-            </span>
-          </div>
+          ))}
         </div>
       </section>
       <section className='mb-12 relative h-80 rounded-xl overflow-hidden group'>
