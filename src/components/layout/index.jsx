@@ -2,22 +2,32 @@ import {
   ChevronDown,
   Heart,
   HomeIcon,
+  LocateIcon,
+  MapPin,
   Search,
   ShoppingCart,
   User,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useLocation } from 'react-router-dom';
-import useAxios from '../../hooks/useAxios';
-import useSetArrayQuery from 'hooks/useSetArrayQuery';
+import { useState } from 'react';
+import Cookies from 'js-cookie';
+
+import useAxios from 'hooks/useAxios';
+import useSetQuery from 'hooks/useSetQuery';
+import { Button } from 'components/ui/button';
+import SelectRegion from '../dialogs/SelectRegion';
 
 function Layout() {
   const { t } = useTranslation();
   const axios = useAxios();
-  const { search } = useLocation();
-  const setQuery = useSetArrayQuery();
+  const [query] = useSearchParams();
+  const setQuery = useSetQuery();
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(() => {
+    return Cookies.get('region') || '';
+  });
 
   const regions = useQuery({
     queryKey: ['/dashboard/regions'],
@@ -31,9 +41,12 @@ function Layout() {
     <div className='bg-surface font-body text-on-surface h-dvh'>
       <header className='fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm font-headline antialiased tracking-tight'>
         <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto gap-8'>
-          <div className='text-2xl font-black tracking-tighter text-[#3622F2] shrink-0'>
+          <NavLink
+            to=''
+            className='text-2xl font-black tracking-tighter text-[#3622F2] shrink-0'
+          >
             UstaMarket
-          </div>
+          </NavLink>
           <div className='grow max-w-2xl relative group'>
             <div className='absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline'>
               <span className='material-symbols-outlined'>
@@ -41,77 +54,45 @@ function Layout() {
               </span>
             </div>
             <input
-              className='w-full bg-surface-container-low border-none rounded-full py-3 pl-12 pr-4 focus:ring-2 focus:ring-primary/20 transition-all text-sm'
+              className='w-full bg-surface-container-low border-none rounded-full py-3 pl-12 pr-4 focus:ring-2 focus:ring-surface-tint/20 transition-all text-sm'
               placeholder='Mahsulot yoki xizmat qidirish'
               type='text'
             />
           </div>
           <nav className='hidden md:flex items-center gap-6'>
-            <NavLink
-              className={({ isActive, isPending }) =>
-                `${isPending ? 'bg-gray-100' : isActive ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} transition-colors font-bold border-b-2 pb-1`
-              }
-              to='/'
+            <div
+              className={`${!query.get('type') ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} cursor-pointer transition-colors font-bold border-b-2 pb-1`}
+              onClick={() => setQuery('type', '')}
             >
               {t('menus.all')}
-            </NavLink>
-            <NavLink
-              className={({ isActive, isPending }) =>
-                `${isPending ? 'bg-gray-100' : isActive ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} transition-colors font-bold border-b-2 pb-1`
-              }
-              to='/manufacturer'
+            </div>
+            <div
+              className={`${query.get('type') == 'manufacturer' ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} cursor-pointer transition-colors font-bold border-b-2 pb-1`}
+              onClick={() => setQuery('type', 'manufacturer')}
             >
               Ishlab chiqaruvchi
-            </NavLink>
-            <NavLink
-              className={({ isActive, isPending }) =>
-                `${isPending ? 'bg-gray-100' : isActive ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} transition-colors font-bold border-b-2 pb-1`
-              }
-              to='/services'
+            </div>
+            <div
+              className={`${query.get('type') == 'services' ? 'text-[#3622F2] border-[#3622F2]' : 'text-slate-500 border-b-transparent hover:border-b-slate-500'} cursor-pointer transition-colors font-bold border-b-2 pb-1`}
+              onClick={() => setQuery('type', 'services')}
             >
               Xizmatlar
-            </NavLink>
+            </div>
           </nav>
           <div className='flex items-center gap-4'>
             <div className='relative'>
-              <div
-                className={
-                  'w-fit px-3 pr-1 h-7 rounded-md border border-gray-200 bg-white shadow-sm flex items-center justify-between gap-2 hover:bg-primary hover:text-white transition-all duration-300 relative'
-                }
+              <Button
+                variant='outline'
+                className='text-base text-ellipsis'
+                onClick={() => setIsOpen(true)}
               >
-                {'And'}
-                <ChevronDown size={18} color='#a9a9a9' />
-              </div>
-              <div className='absolute top-full bg-white mt-1 shadow-md rounded-md'>
-                {regions?.data?.map((region) => (
-                  <div className='whitespace-nowrap p-1 px-2' key={region?.id}>
-                    {region?.name}
-                  </div>
-                ))}
-              </div>
+                <MapPin />
+                <span className='hidden lg:inline-block max-w-36 truncate'>
+                  {regions?.data?.find((reg) => reg?.id == selectedValue)
+                    ?.name || ''}
+                </span>
+              </Button>
             </div>
-            {/* <button className='p-2 text-on-surface hover:bg-[#3622F2]/5 rounded-full transition-transform active:scale-95'>
-              <span className='material-symbols-outlined' data-icon='favorite'>
-                favorite
-              </span>
-            </button>
-            <button className='p-2 text-on-surface hover:bg-[#3622F2]/5 rounded-full transition-transform active:scale-95 relative'>
-              <span
-                className='material-symbols-outlined'
-                data-icon='shopping_cart'
-              >
-                shopping_cart
-              </span>
-              <span className='absolute top-1 right-1 w-2 h-2 bg-error rounded-full'></span>
-            </button>
-            <button className='p-2 text-on-surface hover:bg-[#3622F2]/5 rounded-full transition-transform active:scale-95'>
-              <span
-                className='material-symbols-outlined'
-                data-icon='account_circle'
-              >
-                account_circle
-              </span>
-            </button> */}
           </div>
         </div>
       </header>
@@ -172,9 +153,16 @@ function Layout() {
           )}
         </NavLink>
       </nav>
-      <button className='hidden md:flex fixed bottom-8 right-8 w-16 h-16 bg-primary text-white rounded-full shadow-2xl items-center justify-center hover:scale-110 active:scale-95 transition-all z-40'>
+      <button className='hidden md:flex fixed bottom-8 right-8 w-16 h-16 bg-surface-tint text-white rounded-full shadow-2xl items-center justify-center hover:scale-110 active:scale-95 transition-all z-40'>
         <span className='material-symbols-outlined text-3xl'>chat</span>
       </button>
+      <SelectRegion
+        open={isOpen}
+        setOpen={setIsOpen}
+        setSelectedRegion={setSelectedValue}
+        selectedRegion={selectedValue}
+        regions={regions}
+      />
     </div>
   );
 }

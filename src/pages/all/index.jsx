@@ -36,19 +36,19 @@ function All() {
 
   return (
     <div>
-      <section className='flex items-center justify-center mb-8'>
+      {/* <section className='flex items-center justify-center mb-8'>
         <div className='inline-flex p-1.5 bg-surface-container-high rounded-full'>
-          <button className='px-6 py-2.5 rounded-full bg-white text-primary font-bold shadow-sm text-sm'>
+          <button className='px-6 py-2.5 rounded-full bg-white text-surface-tint font-bold shadow-sm text-sm'>
             🔥 Barchasi
           </button>
-          <button className='px-6 py-2.5 rounded-full text-on-surface-variant font-medium text-sm hover:text-primary transition-colors'>
+          <button className='px-6 py-2.5 rounded-full text-on-surface-variant font-medium text-sm hover:text-surface-tint transition-colors'>
             🧱 Mahsulot ishlab chiqaruvchi
           </button>
-          <button className='px-6 py-2.5 rounded-full text-on-surface-variant font-medium text-sm hover:text-primary transition-colors'>
+          <button className='px-6 py-2.5 rounded-full text-on-surface-variant font-medium text-sm hover:text-surface-tint transition-colors'>
             🛠 Xizmat ko‘rsatuvchi
           </button>
         </div>
-      </section>
+      </section> */}
       <section className='mb-10 overflow-hidden'>
         <div className='flex gap-4 overflow-x-auto hide-scrollbar pb-4'>
           {categories?.data?.map((item) => (
@@ -60,7 +60,7 @@ function All() {
               onClick={() => setQuery('category_ids', item?.id)}
             >
               <div
-                className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-primary text-white' : ''}`}
+                className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
               >
                 <span className='material-symbols-outlined text-3xl'>
                   construction
@@ -74,7 +74,7 @@ function All() {
         </div>
       </section>
       <section className='mb-12 relative h-80 rounded-xl overflow-hidden group'>
-        <div className='absolute inset-0 bg-gradient-to-r from-primary to-primary-container'></div>
+        <div className='absolute inset-0 bg-gradient-to-r from-surface-tint to-primary-container'></div>
         <img
           alt='Construction Promo'
           className='absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay'
@@ -88,7 +88,7 @@ function All() {
           <h1 className='text-5xl font-black max-w-lg mb-6 leading-tight'>
             Qurilish ashyolariga 30% gacha foyda
           </h1>
-          <button className='bg-white text-primary px-8 py-4 rounded-full font-bold w-fit shadow-xl hover:scale-105 transition-transform'>
+          <button className='bg-white text-surface-tint px-8 py-4 rounded-full font-bold w-fit shadow-xl hover:scale-105 transition-transform'>
             Xaridni boshlash
           </button>
         </div>
@@ -101,7 +101,7 @@ function All() {
             </span>{' '}
             Saralash
           </button>
-          <button className='px-5 py-2 rounded-full bg-primary-container text-on-primary-container text-sm font-semibold'>
+          <button className='px-5 py-2 rounded-full bg-surface-tint-container text-on-surface-tint-container text-sm font-semibold'>
             Sertifikatlangan
           </button>
           <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold hover:bg-surface-container-low'>
@@ -122,7 +122,7 @@ function All() {
               Mashhur mahsulotlar
             </h2>
             <Link
-              className='text-primary font-bold text-sm hover:underline'
+              className='text-surface-tint font-bold text-sm hover:underline'
               to='/products'
             >
               Hammasini ko'rish
@@ -148,7 +148,7 @@ function All() {
           <div className='flex items-end justify-between'>
             <h2 className='text-2xl font-black tracking-tight'>Xizmatlar</h2>
           </div>
-          <div className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-primary/10'>
+          <div className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-surface-tint/10'>
             <div className='h-40 relative'>
               <img
                 className='w-full h-full object-cover'
@@ -180,11 +180,11 @@ function All() {
                   </div>
                   <span className='text-xs font-bold'>Azizbek Elektro</span>
                 </div>
-                <span className='text-primary font-bold text-sm'>
+                <span className='text-surface-tint font-bold text-sm'>
                   Kelishiladi
                 </span>
               </div>
-              <button className='w-full py-3 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2'>
+              <button className='w-full py-3 rounded-full border-2 border-surface-tint text-surface-tint font-bold hover:bg-surface-tint hover:text-white transition-all flex items-center justify-center gap-2'>
                 <span className='material-symbols-outlined text-lg'>call</span>
                 Qo'ng'iroq qilish
               </button>
@@ -206,7 +206,9 @@ function All() {
                   <h4 className='text-sm font-bold truncate w-40'>
                     Fasad bo'yog'i "Akryl"
                   </h4>
-                  <p className='text-xs text-primary font-bold'>245,000 UZS</p>
+                  <p className='text-xs text-surface-tint font-bold'>
+                    245,000 UZS
+                  </p>
                 </div>
               </div>
               <div className='flex gap-3 items-center'>
@@ -221,7 +223,7 @@ function All() {
                   <h4 className='text-sm font-bold truncate w-40'>
                     Professional Drel to'plami
                   </h4>
-                  <p className='text-xs text-primary font-bold'>
+                  <p className='text-xs text-surface-tint font-bold'>
                     1,200,000 UZS
                   </p>
                 </div>
