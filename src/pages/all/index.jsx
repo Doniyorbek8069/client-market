@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
-import ProductCard from '../../components/cards/productCard';
+import ProductCard from '../../components/cards/ProductCard';
 import { LoaderPinwheel } from 'lucide-react';
 // api/dashboard/regions
 // api/dashboard/units
