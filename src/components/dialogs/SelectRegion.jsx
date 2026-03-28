@@ -36,6 +36,13 @@ export default function SelectRegion({
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading='Hududlar'>
+            <CommandItem
+              className={`${!selectedRegion ? 'bg-gray-100' : ''}`}
+              onSelect={() => onChange('')}
+            >
+              <MapPin />
+              <span>Hammasi</span>
+            </CommandItem>
             {regions?.data?.map((region) => (
               <CommandItem
                 className={`${selectedRegion == region?.id ? 'bg-gray-100' : ''}`}

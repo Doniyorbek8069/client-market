@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 
 import useAxios from 'hooks/useAxios';
@@ -35,7 +35,16 @@ function Layout() {
       const res = await axios.get('/dashboard/regions');
       return res?.data?.data;
     },
+    initialData: localStorage.getItem('regions')
+      ? JSON.parse(localStorage.getItem('regions'))
+      : [],
   });
+
+  useEffect(() => {
+    if (regions?.data) {
+      localStorage.setItem('regions', JSON.stringify(regions?.data));
+    }
+  }, [regions?.data]);
 
   return (
     <div className='bg-surface font-body text-on-surface h-dvh'>
@@ -98,10 +107,16 @@ function Layout() {
                 onClick={() => setIsOpen(true)}
               >
                 <MapPin />
-                <span className='hidden lg:inline-block max-w-36 truncate'>
-                  {regions?.data?.find((reg) => reg?.id == selectedValue)
-                    ?.name || ''}
-                </span>
+                {selectedValue ? (
+                  <span className='hidden lg:inline-block max-w-36 truncate'>
+                    {regions?.data?.find((reg) => reg?.id == selectedValue)
+                      ?.name || ''}
+                  </span>
+                ) : (
+                  <span className='hidden lg:inline-block max-w-36 truncate'>
+                    Hammasi
+                  </span>
+                )}
               </Button>
             </div>
           </div>

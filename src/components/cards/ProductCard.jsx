@@ -3,6 +3,7 @@ import { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { motion } from 'framer-motion';
+import separator from '../../hooks/separator';
 
 const MotionDiv = motion.div;
 
@@ -100,7 +101,7 @@ function ProductCard({ data, setLikedProducts }) {
         </p>
         <div className='flex items-baseline gap-2 pt-2'>
           <span className='text-xl font-black text-on-surface'>
-            {data?.price} {data?.valute?.name}
+            {separator(data?.price, data?.valute?.name)}
           </span>
           <span className='text-xs text-on-surface-variant'>
             / {data?.unit?.name}

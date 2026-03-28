@@ -75,9 +75,10 @@ function All() {
                 <div
                   className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
                 >
-                  <span className='material-symbols-outlined text-3xl'>
-                    construction
-                  </span>
+                  <span
+                    className='material-symbols-outlined text-3xl'
+                    dangerouslySetInnerHTML={{ __html: item?.icon }}
+                  />
                 </div>
                 <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
                   {item?.name}
@@ -126,7 +127,7 @@ function All() {
           </button>
         </div>
         <p className='text-on-surface-variant text-sm font-medium'>
-          1,240 ta mahsulot topildi
+          {products?.data?.total} ta mahsulot topildi
         </p>
       </section>
       <section className='grid grid-cols-1 md:grid-cols-12 gap-6'>
