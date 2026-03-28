@@ -4,6 +4,7 @@ import useNotification from './useNotification';
 import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 // ★★★ Bu yerda – fayl darajasida, bir marta yaratiladi ★★★
 const showErrorNotification = debounce(
@@ -22,6 +23,7 @@ const useAxios = () => {
   const sendNotification = useNotification();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const region = Cookies.get('region');
 
   const logout = useCallback(() => {
     navigate('/login');
@@ -31,6 +33,8 @@ const useAxios = () => {
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
+        config.headers['region'] = region;
+
         return config;
       },
       (err) => Promise.reject(err),

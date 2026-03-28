@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
 import { LoaderPinwheel } from 'lucide-react';
@@ -18,11 +18,15 @@ function All() {
   const axios = useAxios();
   const { search } = useLocation();
   const setQuery = useSetArrayQuery();
+  const [query] = useSearchParams();
+  const type = query.get('type');
 
   const categories = useQuery({
-    queryKey: ['/dashboard/categories'],
+    queryKey: ['/dashboard/categories', type],
     queryFn: async () => {
-      const res = await axios.get('/dashboard/categories');
+      const res = await axios.get(
+        `/dashboard/categories${type ? '?type=' + type : ''}`,
+      );
       return res?.data?.data;
     },
   });
@@ -51,26 +55,36 @@ function All() {
       </section> */}
       <section className='mb-10 overflow-hidden'>
         <div className='flex gap-4 overflow-x-auto hide-scrollbar pb-4'>
-          {categories?.data?.map((item) => (
-            <div
-              key={item?.id}
-              className={
-                'flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'
-              }
-              onClick={() => setQuery('category_ids', item?.id)}
-            >
+          {categories?.isLoading ? (
+            <div className='flex justify-center'>
+              <LoaderPinwheel
+                size={55}
+                className='animate-spin'
+                color='#3622F2'
+              />
+            </div>
+          ) : (
+            categories?.data?.map((item) => (
               <div
-                className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
+                key={item?.id}
+                className={
+                  'flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'
+                }
+                onClick={() => setQuery('category_ids', item?.id)}
               >
-                <span className='material-symbols-outlined text-3xl'>
-                  construction
+                <div
+                  className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
+                >
+                  <span className='material-symbols-outlined text-3xl'>
+                    construction
+                  </span>
+                </div>
+                <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
+                  {item?.name}
                 </span>
               </div>
-              <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-                {item?.name}
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
       <section className='mb-12 relative h-80 rounded-xl overflow-hidden group'>

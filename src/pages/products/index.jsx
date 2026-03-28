@@ -11,7 +11,7 @@ import { LoaderPinwheel } from 'lucide-react';
 // api/dashboard/companies
 // api/dashboard/product/{ProductId}
 
-function All() {
+function Products() {
   const axios = useAxios();
   // const categories = useQuery({
   //   queryKey: ['/dashboard/categories'],
@@ -145,4 +145,4 @@ function All() {
   );
 }
 
-export default memo(All);
+export default memo(Products);

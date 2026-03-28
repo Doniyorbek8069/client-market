@@ -80,6 +80,17 @@ function Layout() {
             </div>
           </nav>
           <div className='flex items-center gap-4'>
+            <NavLink
+              to='/lovely'
+              className={`p-2 hover:bg-[#3622F2]/5 hover:[&_svg]:stroke-[#3622F2] [&_svg]:stroke-on-surface rounded-full transition-transform active:scale-95`}
+            >
+              {({ isActive }) => (
+                <Heart
+                  fill={isActive ? '#3622F2' : 'transparent'}
+                  color={isActive ? '#3622F2' : 'inherit'}
+                />
+              )}
+            </NavLink>
             <div className='relative'>
               <Button
                 variant='outline'

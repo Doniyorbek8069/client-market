@@ -1,22 +1,61 @@
-import { useState } from 'react';
+import { memo } from 'react';
 import {
-  Heart,
-  Share2,
-  Star,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
   LoaderPinwheel,
+  BadgeCheck,
+  Store,
+  Send,
+  BookHeart,
+  Link as LinkLucide,
+  Phone,
 } from 'lucide-react';
 // import { useTranslation } from 'react-i18next';
-import useAxios from '../../hooks/useAxios';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+
+import useAxios from 'hooks/useAxios';
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FileText, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export function CarouselDemo({ images }) {
+  return (
+    <Carousel className='w-full'>
+      <CarouselContent>
+        {images?.map((img, index) => (
+          <CarouselItem key={index}>
+            <div className='p-1'>
+              <Card>
+                <CardContent className='flex aspect-square items-center justify-center p-6'>
+                  <img src={img} />
+                </CardContent>
+              </Card>
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious className='left-1' />
+      <CarouselNext className='right-1' />
+    </Carousel>
+  );
+}
 
 const Product = () => {
   // const { t } = useTranslation();
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
   const axios = useAxios();
   const { id } = useParams();
 
@@ -29,8 +68,8 @@ const Product = () => {
   });
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
-  const thumbnails = data?.images?.map((img) => baseUrl + img);
-  if (data?.image) thumbnails?.unshift(baseUrl + data?.image);
+  const images = data?.images?.map((img) => baseUrl + img);
+  if (data?.image) images?.unshift(baseUrl + data?.image);
 
   if (isLoading) {
     return (
@@ -51,62 +90,43 @@ const Product = () => {
           {/* ==================== RASMLAR QISMI ==================== */}
           <div>
             <div className='bg-white rounded-2xl p-4 shadow-sm'>
-              <img
-                src={thumbnails?.[selectedImage]}
-                alt={data?.title}
-                className='w-full aspect-square object-contain rounded-xl'
-              />
-            </div>
-
-            {/* Thumbnails */}
-            <div className='flex gap-3 mt-4 overflow-x-auto pb-2'>
-              {thumbnails?.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 border-2 rounded-md w-20 h-20 overflow-hidden transition-all ${
-                    selectedImage === index
-                      ? 'border-purple-600'
-                      : 'border-transparent'
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt=''
-                    className='w-full h-full object-cover'
-                  />
-                </button>
-              ))}
+              <CarouselDemo images={images} />
             </div>
           </div>
 
           {/* ==================== MA'LUMOTLAR QISMI ==================== */}
           <div className='space-y-6'>
             <h1 className='text-3xl font-semibold leading-tight'>
-              {data?.title}
+              {data?.name}
             </h1>
-
-            {/* Rating */}
-            <div className='flex items-center gap-4'>
-              <div className='flex items-center text-yellow-500'>
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Star
-                      key={i}
-                      size={20}
-                      fill={
-                        i < Math.floor(data?.rating) ? 'currentColor' : 'none'
-                      }
-                    />
-                  ))}
-              </div>
-              <span className='font-medium'>{data?.rating}</span>
-              <span className='text-gray-500'>
-                ({data?.reviewCount} fikrlar)
+            <div className='flex gap-1'>
+              <span
+                className={`bg-success/10 text-xs font-bold flex gap-1 ${data?.is_certificated == 1 ? 'text-green-600' : 'text-red-400'} px-2 py-0.5 rounded`}
+              >
+                {data?.is_certificated == 1 ? (
+                  <BadgeCheck size={15} color='#2291f2' />
+                ) : (
+                  ''
+                )}
+                {data?.is_certificated == 1
+                  ? 'Sertifikatlangan'
+                  : 'Sertifikatlanmagan'}
               </span>
-              <span className='text-emerald-600'>
-                • {data?.orderCount}+ buyurtmalar
+
+              <span
+                className={`${data?.have_nds == 1 ? 'bg-surface-tint/10' : 'bg-orange-400/10'} text-xs font-bold ${data?.have_nds == 1 ? 'text-surface-tint' : 'text-orange-400'} px-2 py-0.5 rounded`}
+              >
+                QQS {data?.have_nds == 1 ? 'bilan' : 'siz'}
+              </span>
+              <span
+                className={`${data?.is_debtable == 1 ? 'bg-surface-tint/10' : 'bg-orange-400/10'} text-xs font-bold ${data?.is_debtable == 1 ? 'text-surface-tint' : 'text-orange-400'} px-2 py-0.5 rounded`}
+              >
+                Nasiyaga {data?.is_debtable == 1 ? 'berilari' : 'berilmaydi'}
+              </span>
+              <span
+                className={`${data?.is_changeable == 1 ? 'bg-surface-tint/10' : 'bg-orange-400/10'} text-xs font-bold ${data?.have_nds == 1 ? 'text-surface-tint' : 'text-orange-400'} px-2 py-0.5 rounded`}
+              >
+                Narx {data?.is_changeable == 1 ? 'kelishiladi' : "o'zgarmas"}
               </span>
             </div>
 
@@ -129,43 +149,66 @@ const Product = () => {
               )}
             </div>
 
-            {/* Delivery & Stock */}
-            <div className='bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center gap-4'>
-              <Truck className='text-emerald-600 mt-1' size={28} />
-              <p className='font-medium text-emerald-700'>
-                MIN: {data?.min_order}
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className='flex flex-col sm:flex-row gap-4'>
-              <button className='flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-4 rounded-2xl transition text-lg'>
-                Bir tegishda sotib olish
-              </button>
-              <button className='flex-1 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 font-medium py-4 rounded-2xl transition text-lg'>
-                Savatchaga
-              </button>
-              <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className={`p-4 border-2 rounded-2xl transition ${isFavorite ? 'border-red-500 text-red-500' : 'border-gray-300'}`}
-              >
-                <Heart size={28} fill={isFavorite ? 'currentColor' : 'none'} />
-              </button>
-            </div>
-
             {/* Seller */}
             <div className='border-t pt-6'>
               <p className='text-sm text-gray-500 mb-2'>Sotuvchi</p>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <p className='font-medium'>{data?.company?.name}</p>
-                  <p className='text-sm text-yellow-600'>
-                    ★ {data?.company?.rating} ({data?.company?.reviewCount})
+              <div>
+                <p className='font-medium mb-5 flex items-center text-blue-500 gap-2 text-[20px]'>
+                  <Store size={20} color='#0ea825' />
+                  {data?.company?.name}
+
+                  <button className='ml-auto text-purple-600 text-sm font-medium'>
+                    Do'konga →
+                  </button>
+                </p>
+                {!!data?.company?.phone && (
+                  <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
+                    <Phone size={15} />
+                    <Link
+                      reloadDocument
+                      className='text-blue-500'
+                      to={`tel:${data?.company?.phone}`}
+                    >
+                      {data?.company?.phone}
+                    </Link>
                   </p>
-                </div>
-                <button className='text-purple-600 text-sm font-medium'>
-                  Do'konga →
-                </button>
+                )}
+                {!!data?.company?.telegram && (
+                  <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
+                    <Send size={15} />
+                    <Link
+                      target='_blank'
+                      className='text-blue-500'
+                      to={`https://t.me/${data?.company?.telegram}`}
+                    >
+                      {data?.company?.telegram}
+                    </Link>
+                  </p>
+                )}
+                {!!data?.company?.instagram && (
+                  <p className='text-sm text-red-600 flex items-center gap-2 mb-1'>
+                    <BookHeart size={15} />
+                    <Link
+                      target='_blank'
+                      className='text-blue-500'
+                      to={`https://www.instagram.com/${data?.company?.instagram}`}
+                    >
+                      {data?.company?.instagram}
+                    </Link>
+                  </p>
+                )}
+                {!!data?.company?.website && (
+                  <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
+                    <LinkLucide size={15} />
+                    <Link
+                      target='_blank'
+                      className='text-blue-500'
+                      to={data?.company?.website}
+                    >
+                      vebsayt
+                    </Link>
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -173,23 +216,90 @@ const Product = () => {
 
         {/* Description & Tabs */}
         <div className='mt-16'>
-          <div className='border-b mb-8'>
-            <button className='pb-4 border-b-4 border-purple-600 font-medium text-lg px-8'>
-              Tavsif
-            </button>
-            <button className='pb-4 text-gray-500 px-8'>Характеристики</button>
-            <button className='pb-4 text-gray-500 px-8'>
-              Отзывы ({data?.reviewCount})
-            </button>
-          </div>
+          <Tabs defaultValue='overview' className='w-full'>
+            <TabsList variant='line'>
+              <TabsTrigger value='overview'>Tavsif</TabsTrigger>
+              <TabsTrigger value='certificate'>Sertifikat</TabsTrigger>
+            </TabsList>
+            <TabsContent value='overview'>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Mahsulot haqida</CardTitle>
+                  <CardDescription>
+                    <div className='prose max-w-none text-gray-700 leading-relaxed'>
+                      <div
+                        dangerouslySetInnerHTML={{ __html: data?.description }}
+                      />
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </TabsContent>
+            <TabsContent value='certificate'>
+              <Card>
+                <CardHeader>
+                  <CardTitle></CardTitle>
+                  <CardDescription>Sertifikatlar</CardDescription>
+                </CardHeader>
+                <CardContent className='text-sm text-muted-foreground flex flex-col gap-2'>
+                  {data?.certificates?.map((cer) => {
+                    const fileUrl = import.meta.env.VITE_BASE_URL + cer?.file;
+                    const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(fileUrl);
+                    const isPDF = /\.pdf$/i.test(fileUrl);
+                    const isDoc = /\.(doc|docx)$/i.test(fileUrl);
+                    return (
+                      <div
+                        key={cer?.id}
+                        className='flex items-center gap-4 p-4 border rounded-lg bg-slate-50 w-full max-w-md'
+                      >
+                        {/* 1. Agar rasm bo'lsa - Preview ko'rsatamiz */}
+                        {isImage && (
+                          <img
+                            src={fileUrl}
+                            alt='Preview'
+                            className='w-16 h-16 object-cover rounded-md border'
+                          />
+                        )}
 
-          <div className='prose max-w-none text-gray-700 leading-relaxed'>
-            <div dangerouslySetInnerHTML={{ __html: data?.description }} />
-          </div>
+                        {/* 2. Agar hujjat bo'lsa - Ikonka ko'rsatamiz */}
+                        {(isPDF || isDoc) && (
+                          <div className='bg-blue-100 p-3 rounded-md text-blue-600'>
+                            <FileText size={32} />
+                          </div>
+                        )}
+
+                        <div className='flex-1 min-w-0'>
+                          <p className='text-sm font-medium truncate'>
+                            {cer?.name || 'Hujjat nomi'}
+                          </p>
+                          <p className='text-xs text-muted-foreground uppercase'>
+                            {fileUrl.split('.').pop()} fayl
+                          </p>
+                        </div>
+
+                        {/* 3. Ko'rish yoki Yuklab olish tugmasi */}
+                        <Button variant='outline' size='sm' asChild>
+                          <a
+                            href={fileUrl}
+                            target='_blank'
+                            className='flex items-center'
+                            rel='noreferrer'
+                          >
+                            <ExternalLink className='h-4 w-4 mr-2' />
+                            Ochish
+                          </a>
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
   );
 };
 
-export default Product;
+export default memo(Product);

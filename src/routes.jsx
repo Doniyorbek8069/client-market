@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import All from './pages/all';
 import Manufacturer from './pages/manufacturer';
-import Services from './pages/services';
+import Lovely from './pages/lovely';
 import Layout from './components/layout';
 import Product from './pages/product';
 import Products from './pages/products';
@@ -21,7 +21,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'services',
-        element: <Services />,
+        element: <Lovely />,
       },
       {
         path: 'products',
@@ -33,15 +33,15 @@ export const routes = createBrowserRouter([
       },
       {
         path: 'lovely',
-        element: <Services />,
+        element: <Lovely />,
       },
       {
         path: 'shopping',
-        element: <Services />,
+        element: <Lovely />,
       },
       {
         path: 'profile',
-        element: <Services />,
+        element: <Lovely />,
       },
     ],
   },
