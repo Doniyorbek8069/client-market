@@ -47,7 +47,7 @@ function Layout() {
   }, [regions?.data]);
 
   return (
-    <div className='bg-surface font-body text-on-surface h-dvh'>
+    <div className='bg-surface font-body text-on-surface min-h-dvh'>
       <header className='fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm font-headline antialiased tracking-tight'>
         <div className='flex items-center justify-between px-6 py-4 max-w-7xl mx-auto gap-8'>
           <NavLink
@@ -122,7 +122,7 @@ function Layout() {
           </div>
         </div>
       </header>
-      <main className='pt-24 pb-32 max-w-7xl mx-auto px-6 h-full'>
+      <main className='pt-24 pb-32 max-w-7xl mx-auto px-6 min-h-full'>
         <Outlet />
       </main>
       <nav className='md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-end px-4 pb-6 bg-white/80 backdrop-blur-2xl shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-t-[3rem] border-t border-slate-100 font-label text-[11px] font-semibold uppercase tracking-wider'>
