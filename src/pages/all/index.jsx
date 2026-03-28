@@ -3,9 +3,10 @@ import { memo } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
-import { LoaderPinwheel } from 'lucide-react';
+import { ListFilter, LoaderPinwheel } from 'lucide-react';
 import useSetArrayQuery from 'hooks/useSetArrayQuery';
 import hasQuery from 'hooks/hasQuery';
+import useSetQuery from 'hooks/useSetQuery';
 
 // api/dashboard/regions
 // api/dashboard/units
@@ -17,7 +18,8 @@ import hasQuery from 'hooks/hasQuery';
 function All() {
   const axios = useAxios();
   const { search } = useLocation();
-  const setQuery = useSetArrayQuery();
+  const setArrayQuery = useSetArrayQuery();
+  const setQuery = useSetQuery();
   const [query] = useSearchParams();
   const type = query.get('type');
 
@@ -37,6 +39,21 @@ function All() {
       return res?.data?.data;
     },
   });
+
+  const toggleQuery = (query_name) => {
+    if (query.get(query_name)) setQuery(query_name, '');
+    else setQuery(query_name, 'true');
+  };
+
+  const toggleSort = (query_name) => {
+    if (query.get(query_name) == 'asc') {
+      return setQuery(query_name, 'desc');
+    }
+    if (query.get(query_name) == 'desc') {
+      return setQuery(query_name, '');
+    }
+    setQuery(query_name, 'asc');
+  };
 
   return (
     <div>
@@ -70,7 +87,7 @@ function All() {
                 className={
                   'flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'
                 }
-                onClick={() => setQuery('category_ids', item?.id)}
+                onClick={() => setArrayQuery('category_ids', item?.id)}
               >
                 <div
                   className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
@@ -111,18 +128,30 @@ function All() {
       <section className='flex flex-wrap items-center justify-between gap-4 mb-8'>
         <div className='flex gap-3 overflow-x-auto hide-scrollbar'>
           <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-low transition-colors'>
-            <span className='material-symbols-outlined text-lg'>
-              filter_list
-            </span>{' '}
+            <ListFilter />
             Saralash
           </button>
-          <button className='px-5 py-2 rounded-full bg-surface-tint-container text-on-surface-tint-container text-sm font-semibold'>
+          <button
+            onClick={() => toggleQuery('is_certificated')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_certificated') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
             Sertifikatlangan
           </button>
-          <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold hover:bg-surface-container-low'>
-            Narx: Pastdan balandga
+          <button
+            onClick={() => toggleSort('sort_by_price')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('sort_by_price') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
+            Narx:{' '}
+            {query.get('sort_by_price') == 'asc'
+              ? 'Blanddan pastga'
+              : query.get('sort_by_price') == 'desc'
+                ? 'Pastdan balandga'
+                : 'Tartiblash'}
           </button>
-          <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold hover:bg-surface-container-low'>
+          <button
+            onClick={() => toggleQuery('is_news')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_news') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
             Yangi qo'shilganlar
           </button>
         </div>

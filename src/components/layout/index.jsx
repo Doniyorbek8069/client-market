@@ -18,6 +18,7 @@ import useAxios from 'hooks/useAxios';
 import useSetQuery from 'hooks/useSetQuery';
 import { Button } from 'components/ui/button';
 import SelectRegion from '../dialogs/SelectRegion';
+import useDebounceSearch from '../../hooks/useDebounceSearch';
 
 function Layout() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ function Layout() {
   const [query] = useSearchParams();
   const setQuery = useSetQuery();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchValue, setSearchValue] = useDebounceSearch('name', '', 300);
   const [selectedValue, setSelectedValue] = useState(() => {
     return Cookies.get('region') || '';
   });
@@ -66,6 +68,8 @@ function Layout() {
               className='w-full bg-surface-container-low border-none rounded-full py-3 pl-12 pr-4 focus:ring-2 focus:ring-surface-tint/20 transition-all text-sm'
               placeholder='Mahsulot yoki xizmat qidirish'
               type='text'
+              value={searchValue}
+              onChange={(e) => setSearchValue(e?.target?.value)}
             />
           </div>
           <nav className='hidden md:flex items-center gap-6'>

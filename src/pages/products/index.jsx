@@ -1,115 +1,119 @@
 import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
-import { LoaderPinwheel } from 'lucide-react';
-// api/dashboard/regions
-// api/dashboard/units
-// api/dashboard/categories
-// api/dashboard/products
-// api/dashboard/companies
-// api/dashboard/product/{ProductId}
+import { Filter, ListFilter, LoaderPinwheel } from 'lucide-react';
+
+import useSetArrayQuery from 'hooks/useSetArrayQuery';
+import useSetQuery from 'hooks/useSetQuery';
+import hasQuery from 'hooks/hasQuery';
 
 function Products() {
   const axios = useAxios();
-  // const categories = useQuery({
-  //   queryKey: ['/dashboard/categories'],
-  //   queryFn: async () => {
-  //     const res = await axios.get('/dashboard/categories');
-  //     return res?.data?.data;
-  //   },
-  // });
-  const products = useQuery({
-    queryKey: ['/dashboard/products'],
+  const { search } = useLocation();
+  const [query] = useSearchParams();
+  const setArrayQuery = useSetArrayQuery();
+  const setQuery = useSetQuery();
+  const type = query.get('type');
+
+  const categories = useQuery({
+    queryKey: ['/dashboard/categories', type],
     queryFn: async () => {
-      const res = await axios.get('/dashboard/products');
+      const res = await axios.get(
+        `/dashboard/categories${type ? '?type=' + type : ''}`,
+      );
       return res?.data?.data;
     },
   });
+  const products = useQuery({
+    queryKey: ['/dashboard/products', search],
+    queryFn: async () => {
+      const res = await axios.get(`/dashboard/products${search}`);
+      return res?.data?.data;
+    },
+  });
+
+  const toggleQuery = (query_name) => {
+    if (query.get(query_name)) setQuery(query_name, '');
+    else setQuery(query_name, 'true');
+  };
+
+  const toggleSort = (query_name) => {
+    if (query.get(query_name) == 'asc') {
+      return setQuery(query_name, 'desc');
+    }
+    if (query.get(query_name) == 'desc') {
+      return setQuery(query_name, '');
+    }
+    setQuery(query_name, 'asc');
+  };
 
   return (
     <div>
       <section className='mb-10 overflow-hidden'>
         <div className='flex gap-4 overflow-x-auto hide-scrollbar pb-4'>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                construction
-              </span>
+          {categories?.isLoading ? (
+            <div className='flex justify-center'>
+              <LoaderPinwheel
+                size={55}
+                className='animate-spin'
+                color='#3622F2'
+              />
             </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Cement
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                rebase_edit
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Brick
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                hardware
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Metal
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                format_paint
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Paint
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                handyman
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Tools
-            </span>
-          </div>
-          <div className='flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'>
-            <div className='w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300'>
-              <span className='material-symbols-outlined text-3xl'>
-                engineering
-              </span>
-            </div>
-            <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
-              Services
-            </span>
-          </div>
+          ) : (
+            categories?.data?.map((item) => (
+              <div
+                key={item?.id}
+                className={
+                  'flex flex-col items-center gap-2 min-w-[100px] group cursor-pointer'
+                }
+                onClick={() => setArrayQuery('category_ids', item?.id)}
+              >
+                <div
+                  className={`w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-surface-tint group-hover:text-white transition-all duration-300 ${hasQuery('category_ids', item?.id) ? '!bg-surface-tint text-white' : ''}`}
+                >
+                  <span
+                    className='material-symbols-outlined text-3xl'
+                    dangerouslySetInnerHTML={{ __html: item?.icon }}
+                  />
+                </div>
+                <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
+                  {item?.name}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </section>
 
       <section className='flex flex-wrap items-center justify-between gap-4 mb-8'>
         <div className='flex gap-3 overflow-x-auto hide-scrollbar'>
           <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-low transition-colors'>
-            <span className='material-symbols-outlined text-lg'>
-              filter_list
-            </span>{' '}
+            <ListFilter />
             Saralash
           </button>
-          <button className='px-5 py-2 rounded-full bg-primary-container text-on-primary-container text-sm font-semibold'>
+          <button
+            onClick={() => toggleQuery('is_certificated')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_certificated') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
             Sertifikatlangan
           </button>
-          <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold hover:bg-surface-container-low'>
-            Narx: Pastdan balandga
+          <button
+            onClick={() => toggleSort('sort_by_price')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('sort_by_price') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
+            Narx:{' '}
+            {query.get('sort_by_price') == 'asc'
+              ? 'Blanddan pastga'
+              : query.get('sort_by_price') == 'desc'
+                ? 'Pastdan balandga'
+                : 'Tartiblash'}
           </button>
-          <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold hover:bg-surface-container-low'>
+          <button
+            onClick={() => toggleQuery('is_news')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_news') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+          >
             Yangi qo'shilganlar
           </button>
         </div>
