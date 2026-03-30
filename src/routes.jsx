@@ -5,6 +5,7 @@ import Lovely from './pages/lovely';
 import Layout from './components/layout';
 import Product from './pages/product';
 import Products from './pages/products';
+import Company from './pages/company';
 
 export const routes = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ export const routes = createBrowserRouter([
       {
         path: 'products/:id',
         element: <Product />,
+      },
+      {
+        path: 'company/:id',
+        element: <Company />,
       },
       {
         path: 'lovely',

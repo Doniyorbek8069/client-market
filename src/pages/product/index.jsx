@@ -183,9 +183,12 @@ const Product = () => {
                 <Store size={20} color='#0ea825' />
                 {data?.company?.name}
 
-                <button className='ml-auto text-purple-600 text-sm font-medium'>
+                <Link
+                  to={`/company/${data?.company?.id}`}
+                  className='ml-auto text-purple-600 text-sm font-medium'
+                >
                   Do'konga →
-                </button>
+                </Link>
               </p>
               {!!data?.company?.phone && (
                 <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
@@ -205,7 +208,7 @@ const Product = () => {
                   <Link
                     target='_blank'
                     className='text-blue-500'
-                    to={`https://t.me/${data?.company?.telegram}`}
+                    to={`${data?.company?.telegram?.startsWith('https') ? '' : 'https://t.me/'}${data?.company?.telegram}`}
                   >
                     {data?.company?.telegram}
                   </Link>

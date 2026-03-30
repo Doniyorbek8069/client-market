@@ -97,9 +97,9 @@ function All() {
                     dangerouslySetInnerHTML={{ __html: item?.icon }}
                   />
                 </div>
-                <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
+                <div className='text-xs font-semibold text-center w-full uppercase tracking-wider text-on-surface-variant'>
                   {item?.name}
-                </span>
+                </div>
               </div>
             ))
           )}

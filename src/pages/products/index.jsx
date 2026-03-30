@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import useAxios from '../../hooks/useAxios';
-import ProductCard from '../../components/cards/ProductCard';
-import { Filter, ListFilter, LoaderPinwheel } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { ListFilter, LoaderPinwheel } from 'lucide-react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
-import useSetArrayQuery from 'hooks/useSetArrayQuery';
-import useSetQuery from 'hooks/useSetQuery';
 import hasQuery from 'hooks/hasQuery';
+import useAxios from 'hooks/useAxios';
+import useSetQuery from 'hooks/useSetQuery';
+import useSetArrayQuery from 'hooks/useSetArrayQuery';
+import ProductCard from 'components/cards/ProductCard';
 
 function Products() {
   const axios = useAxios();
@@ -78,9 +78,9 @@ function Products() {
                     dangerouslySetInnerHTML={{ __html: item?.icon }}
                   />
                 </div>
-                <span className='text-xs font-semibold uppercase tracking-wider text-on-surface-variant'>
+                <div className='text-xs font-semibold text-center w-full uppercase tracking-wider text-on-surface-variant'>
                   {item?.name}
-                </span>
+                </div>
               </div>
             ))
           )}
