@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /lovely
+Disallow: /shopping
+Disallow: /profile
+
+Sitemap: https://ustamarket.uz/sitemap.xml
+Sitemap: https://backmarket.smartqur.uz/sitemap.xml

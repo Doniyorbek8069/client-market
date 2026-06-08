@@ -8,6 +8,7 @@ import useAxios from 'hooks/useAxios';
 import useSetQuery from 'hooks/useSetQuery';
 import useSetArrayQuery from 'hooks/useSetArrayQuery';
 import ProductCard from 'components/cards/ProductCard';
+import Seo from 'components/seo/Seo';
 
 function Products() {
   const axios = useAxios();
@@ -51,6 +52,25 @@ function Products() {
 
   return (
     <div>
+      <Seo
+        title="Mahsulotlar katalogi"
+        description={`Qurilish materiallari va xizmatlari katalogi. ${products?.data?.total ?? ''} ta e'lon. Sement, metall, g'isht, bo'yoq, fasad va boshqalar. UstaMarket.uz da to'g'ridan-to'g'ri yetkazib beruvchilardan sotib oling.`}
+        path={`/products${search}`}
+        keywords="mahsulotlar katalogi, qurilish mahsulotlari, sement narxi, metall narxi, armatura, g'isht narxi, bo'yoq"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          numberOfItems: products?.data?.total ?? 0,
+          itemListElement: (products?.data?.data || [])
+            .slice(0, 30)
+            .map((p, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: `https://ustamarket.uz/products/${p?.id}`,
+              name: p?.name,
+            })),
+        }}
+      />
       <section className='mb-10 overflow-hidden'>
         <div className='flex gap-4 overflow-x-auto hide-scrollbar pb-4'>
           {categories?.isLoading ? (

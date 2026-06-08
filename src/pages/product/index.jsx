@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 
 import useAxios from 'hooks/useAxios';
+import Seo from 'components/seo/Seo';
 
 import {
   Carousel,
@@ -80,8 +81,59 @@ const Product = () => {
     );
   }
 
+  const cleanDesc = (data?.description || '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const descShort = cleanDesc.length > 180 ? cleanDesc.slice(0, 180) + '…' : cleanDesc;
+  const ogImage = images?.[0];
+
   return (
     <div>
+      <Seo
+        title={data?.name}
+        description={
+          descShort ||
+          `${data?.name} narxlari va xarakteristikalari. ${data?.company?.name ?? ''}. UstaMarket.uz dan to'g'ridan-to'g'ri sotib oling.`
+        }
+        path={`/products/${id}`}
+        image={ogImage}
+        type="product"
+        keywords={[
+          data?.name,
+          data?.category?.name,
+          data?.company?.name,
+          'qurilish',
+          'narx',
+        ]
+          .filter(Boolean)
+          .join(', ')}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: data?.name,
+          description: cleanDesc || data?.name,
+          image: images || undefined,
+          sku: String(data?.id ?? ''),
+          category: data?.category?.name,
+          brand: data?.company?.name
+            ? { '@type': 'Brand', name: data.company.name }
+            : undefined,
+          offers: {
+            '@type': 'Offer',
+            url: `https://ustamarket.uz/products/${id}`,
+            price: data?.price,
+            priceCurrency: data?.valute?.name === 'UZS' ? 'UZS' : (data?.valute?.name || 'UZS'),
+            availability:
+              data?.status == 1
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            seller: data?.company?.name
+              ? { '@type': 'Organization', name: data.company.name }
+              : undefined,
+          },
+        }}
+      />
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-10'>
         {/* ==================== RASMLAR QISMI ==================== */}
         <div>

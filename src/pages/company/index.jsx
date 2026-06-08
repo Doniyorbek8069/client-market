@@ -20,6 +20,7 @@ import {
 import useAxios from 'hooks/useAxios';
 import useSetQuery from 'hooks/useSetQuery';
 import ProductCard from 'components/cards/ProductCard';
+import Seo from 'components/seo/Seo';
 import {
   BookHeart,
   Globe,
@@ -73,8 +74,30 @@ function Company() {
     setQuery(query_name, 'asc');
   };
   console.log(company.data, company?.isFetching);
+  const c = company?.data;
+  const companyImage = c?.image ? `${import.meta.env.VITE_BASE_URL}${c.image}` : undefined;
+
   return (
     <div>
+      <Seo
+        title={c?.name || 'Kompaniya'}
+        description={`${c?.name ?? ''} — ${c?.type_detail?.name ?? "Qurilish kompaniyasi"}. Mahsulotlar, kontaktlar, manzil. UstaMarket.uz.`}
+        path={`/company/${id}`}
+        image={companyImage}
+        type="profile"
+        keywords={[c?.name, c?.type_detail?.name, 'kompaniya', 'qurilish']
+          .filter(Boolean)
+          .join(', ')}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: c?.name,
+          url: `https://ustamarket.uz/company/${id}`,
+          logo: companyImage,
+          telephone: c?.phone,
+          sameAs: [c?.telegram, c?.instagram, c?.website].filter(Boolean),
+        }}
+      />
       <main className='min-h-screen'>
         {/* <!-- New Sub-Header Navigation --> */}
         <div className='bg-white border-b border-surface-container shadow-sm sticky top-20 z-40'>

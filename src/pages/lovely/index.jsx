@@ -5,6 +5,7 @@ import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
 import { LoaderPinwheel } from 'lucide-react';
 import Cookies from 'js-cookie';
+import Seo from 'components/seo/Seo';
 // api/dashboard/regions
 // api/dashboard/units
 // api/dashboard/categories
@@ -40,6 +41,12 @@ function Lovely() {
 
   return (
     <div>
+      <Seo
+        title="Sevimlilar"
+        description="Sevimli mahsulotlaringiz va e'lonlaringiz ro'yxati."
+        path="/lovely"
+        noindex
+      />
       <section className='flex flex-wrap items-center justify-between gap-4 mb-8'>
         <div className='flex gap-3 overflow-x-auto hide-scrollbar'>
           <button className='px-5 py-2 rounded-full border border-outline-variant/30 text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-low transition-colors'>

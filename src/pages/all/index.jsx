@@ -7,6 +7,7 @@ import { ListFilter, LoaderPinwheel } from 'lucide-react';
 import useSetArrayQuery from 'hooks/useSetArrayQuery';
 import hasQuery from 'hooks/hasQuery';
 import useSetQuery from 'hooks/useSetQuery';
+import Seo from 'components/seo/Seo';
 
 // api/dashboard/regions
 // api/dashboard/units
@@ -55,8 +56,33 @@ function All() {
     setQuery(query_name, 'asc');
   };
 
+  const typeLabel =
+    type === 'manufacturer'
+      ? 'Ishlab chiqaruvchi kompaniyalar'
+      : type === 'services'
+        ? 'Xizmat ko\'rsatuvchi kompaniyalar'
+        : 'Barcha mahsulotlar va xizmatlar';
+
   return (
     <div>
+      <Seo
+        title={typeLabel}
+        description={`UstaMarket.uz — ${typeLabel}. Sement, metall, g'isht, bo'yoq, qurilish xizmatlari. ${products?.data?.total ?? ''} ta e'lon. Yetkazib beruvchidan to'g'ridan-to'g'ri narxlar.`}
+        path={type ? `/?type=${type}` : '/'}
+        keywords={`${typeLabel}, qurilish materiallari, qurilish ashyolari, sement, metall, ishlab chiqaruvchi, xizmat ko'rsatuvchi, Toshkent, Andijon, O'zbekiston`}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: typeLabel,
+          url: `https://ustamarket.uz/${type ? `?type=${type}` : ''}`,
+          isPartOf: { '@type': 'WebSite', name: 'UstaMarket', url: 'https://ustamarket.uz' },
+          hasPart:
+            (categories?.data || []).slice(0, 12).map((c) => ({
+              '@type': 'Thing',
+              name: c?.name,
+            })) || [],
+        }}
+      />
       {/* <section className='flex items-center justify-center mb-8'>
         <div className='inline-flex p-1.5 bg-surface-container-high rounded-full'>
           <button className='px-6 py-2.5 rounded-full bg-white text-surface-tint font-bold shadow-sm text-sm'>

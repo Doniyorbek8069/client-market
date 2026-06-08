@@ -1,16 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>market-client</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#3622F2" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>UstaMarket — Qurilish materiallari va xizmatlar marketplace</title>
+    <meta name="description" content="UstaMarket.uz — O'zbekistondagi qurilish mahsulotlari va xizmatlari B2B marketplace. Sement, metall, g'isht, bo'yoq va boshqa qurilish ashyolari. Yetkazib beruvchi va xizmat ko'rsatuvchi kompaniyalardan to'g'ridan-to'g'ri." />
+    <meta name="keywords" content="qurilish materiallari, qurilish ashyolari, sement, metall, armatura, g'isht, bo'yoq, fasad, yetkazib beruvchi, ishlab chiqaruvchi, qurilish xizmati, Toshkent, Andijon, Buxoro, UstaMarket" />
+    <meta name="author" content="UstaMarket" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://ustamarket.uz/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="UstaMarket" />
+    <meta property="og:locale" content="uz_UZ" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta property="og:url" content="https://ustamarket.uz/" />
+    <meta property="og:title" content="UstaMarket — Qurilish materiallari va xizmatlar marketplace" />
+    <meta property="og:description" content="O'zbekistondagi qurilish mahsulotlari va xizmatlari marketplace. Sement, metall, g'isht, bo'yoq va boshqa qurilish ashyolari." />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="UstaMarket — Qurilish marketplace" />
+    <meta name="twitter:description" content="Qurilish materiallari va xizmatlari. Sement, metall, g'isht, bo'yoq." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://backmarket.smartqur.uz" />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
       rel="stylesheet"
     />
     <link
@@ -22,9 +48,71 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstraicons@1.8.1/font/bootstrap-icons.css"
     />
+
+    <!-- Structured Data: Organization + Website + SiteNavigation -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "UstaMarket",
+            "url": "https://ustamarket.uz",
+            "logo": "https://ustamarket.uz/logo.svg",
+            "sameAs": [
+              "https://t.me/ustamarket",
+              "https://instagram.com/ustamarket"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "name": "UstaMarket",
+            "url": "https://ustamarket.uz",
+            "inLanguage": ["uz-UZ", "ru-RU"],
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://ustamarket.uz/products?name={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "name": [
+              "Barchasi",
+              "Ishlab chiqaruvchi",
+              "Xizmatlar",
+              "Mahsulotlar",
+              "Sevimlilar"
+            ],
+            "url": [
+              "https://ustamarket.uz/",
+              "https://ustamarket.uz/manufacturer",
+              "https://ustamarket.uz/services",
+              "https://ustamarket.uz/products",
+              "https://ustamarket.uz/lovely"
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <noscript>
+        <h1>UstaMarket — Qurilish materiallari va xizmatlar marketplace</h1>
+        <p>
+          UstaMarket.uz — O'zbekistondagi qurilish mahsulotlari va xizmatlari
+          B2B marketplace. Sement, metall, g'isht, bo'yoq va boshqa qurilish
+          ashyolari. Sahifani ko'rish uchun JavaScript yoqilgan bo'lishi kerak.
+        </p>
+        <ul>
+          <li><a href="/">Barcha mahsulotlar</a></li>
+          <li><a href="/manufacturer">Ishlab chiqaruvchi kompaniyalar</a></li>
+          <li><a href="/services">Xizmatlar</a></li>
+          <li><a href="/products">Mahsulotlar katalogi</a></li>
+        </ul>
+      </noscript>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
