@@ -9,6 +9,7 @@ import useSetArrayQuery from 'hooks/useSetArrayQuery';
 import hasQuery from 'hooks/hasQuery';
 import useSetQuery from 'hooks/useSetQuery';
 import Seo from 'components/seo/Seo';
+import separator from 'hooks/separator';
 
 // api/dashboard/regions
 // api/dashboard/units
@@ -39,6 +40,23 @@ function All() {
     queryFn: async () => {
       const res = await axios.get(`/dashboard/products${search}`);
       return res?.data?.data;
+    },
+  });
+
+  // Sidebar widgets — these used to be hardcoded placeholder markup with
+  // fake images/names, never backed by real data.
+  const services = useQuery({
+    queryKey: ['/dashboard/products', 'services-widget'],
+    queryFn: async () => {
+      const res = await axios.get('/dashboard/products?type=services');
+      return res?.data?.data?.data;
+    },
+  });
+  const latest = useQuery({
+    queryKey: ['/dashboard/lasts', 'latest-widget'],
+    queryFn: async () => {
+      const res = await axios.get('/dashboard/lasts');
+      return res?.data?.data?.data;
     },
   });
 
@@ -221,87 +239,93 @@ function All() {
           <div className='flex items-end justify-between'>
             <h2 className='text-2xl font-black tracking-tight'>Xizmatlar</h2>
           </div>
-          <div className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-surface-tint/10'>
-            <div className='h-40 relative'>
-              <img
-                className='w-full h-full object-cover'
-                data-alt='Electrician working on professional wiring box'
-                src='https://lh3.googleusercontent.com/aida-public/AB6AXuDqAvmcxc8x_Ja6A3GV4sA7jxgUUxcbWPSQugIzXjjARYDmXvp8MVapjscOUkTF2BQMGbVb0C_E4oCx4v6jRtC-qXbR7SirMetiKeRQU9oB8z2cIQXe8wnFvr89fFzXA_3wbGQ2W8bpusskE3n4-ORknPLUxh7pC70FeZo0vxxRLuyt9Gj4ZOhVnuF4RisLgV8AF0GmlTmX5LUZVpmtcHJFdhNR23TvQmRZx8RxfyFqAfUmVIjD_EVmHR7J-LaSz4t0b7cNaL6CNH0'
-              />
-              <div className='absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full flex items-center gap-1 shadow-sm'>
-                <span
-                  className='material-symbols-outlined text-sm text-yellow-500'
-                  style={{ fontVariationSettings: 'FILL 1' }}
-                >
-                  star
-                </span>
-                <span className='text-xs font-bold'>4.9</span>
-              </div>
+          {services?.isLoading ? (
+            <div className='flex justify-center'>
+              <LoaderPinwheel size={40} className='animate-spin' color='#3622F2' />
             </div>
-            <div className='p-5 space-y-3'>
-              <h3 className='font-bold text-lg'>Elektromontaj xizmatlari</h3>
-              <p className='text-sm text-on-surface-variant line-clamp-2'>
-                Xonadon va ofislarda to'liq elektr tarmog'ini tortish va montaj
-                qilish.
-              </p>
-              <div className='flex items-center justify-between pt-2'>
-                <div className='flex items-center gap-2'>
-                  <div className='w-8 h-8 rounded-full bg-surface-container flex items-center justify-center'>
-                    <span className='material-symbols-outlined text-sm'>
-                      person
+          ) : services?.data?.length ? (
+            services.data.slice(0, 2).map((item) => (
+              <Link
+                to={`/products/${item?.id}`}
+                key={item?.id}
+                className='block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all border border-transparent hover:border-surface-tint/10'
+              >
+                <div className='h-40 relative bg-surface-container'>
+                  <img
+                    className='w-full h-full object-cover'
+                    alt={item?.name}
+                    src={`${import.meta.env.VITE_BASE_URL}${item?.image}`}
+                  />
+                </div>
+                <div className='p-5 space-y-3'>
+                  <h3 className='font-bold text-lg line-clamp-1'>{item?.name}</h3>
+                  <p
+                    className='text-sm text-on-surface-variant line-clamp-2'
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(item?.description || '', { ALLOWED_TAGS: [] }),
+                    }}
+                  />
+                  <div className='flex items-center justify-between pt-2'>
+                    <div className='flex items-center gap-2 min-w-0'>
+                      <div className='w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0'>
+                        <span className='material-symbols-outlined text-sm'>person</span>
+                      </div>
+                      <span className='text-xs font-bold truncate'>{item?.company?.name}</span>
+                    </div>
+                    <span className='text-surface-tint font-bold text-sm shrink-0'>
+                      {separator(item?.price, item?.valute?.name)}
                     </span>
                   </div>
-                  <span className='text-xs font-bold'>Azizbek Elektro</span>
+                  {!!item?.company?.phone && (
+                    <a
+                      href={`tel:${item.company.phone}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className='w-full py-3 rounded-full border-2 border-surface-tint text-surface-tint font-bold hover:bg-surface-tint hover:text-white transition-all flex items-center justify-center gap-2'
+                    >
+                      <span className='material-symbols-outlined text-lg'>call</span>
+                      Qo'ng'iroq qilish
+                    </a>
+                  )}
                 </div>
-                <span className='text-surface-tint font-bold text-sm'>
-                  Kelishiladi
-                </span>
-              </div>
-              <button className='w-full py-3 rounded-full border-2 border-surface-tint text-surface-tint font-bold hover:bg-surface-tint hover:text-white transition-all flex items-center justify-center gap-2'>
-                <span className='material-symbols-outlined text-lg'>call</span>
-                Qo'ng'iroq qilish
-              </button>
-            </div>
-          </div>
+              </Link>
+            ))
+          ) : (
+            <p className='text-sm text-on-surface-variant'>Hozircha xizmatlar yo'q</p>
+          )}
 
           <div className='bg-surface-container-low rounded-lg p-6'>
             <h3 className='font-bold mb-4'>Yangi qo'shilganlar</h3>
-            <div className='space-y-4'>
-              <div className='flex gap-3 items-center'>
-                <div className='w-12 h-12 rounded-lg bg-white shrink-0 overflow-hidden'>
-                  <img
-                    className='w-full h-full object-cover'
-                    data-alt='New blue color paint bucket'
-                    src='https://lh3.googleusercontent.com/aida-public/AB6AXuAZA-1MUbLRczgO2nhHUJWE9xYlqZVA6pHsWLJtKu1PPQu5DhezUbJ9shEtSc6ZkUwtwnA8MyKWTpBc-15TvCw2sMAaPoijcCIH2ic_QjHik1XInBvRo3nKZlnIItuO7rTGuIFzQckS7LLIBQK_ht6Ytu_SA4sBtXwWQPM6kl7dKi_FZ2U98vDiMfZ4CvszXv3_A13tlxYXxmsSowkr-crAMBzl5jIcEtkeJTQBwCNdKJArT0zcBqzmlXVcsM1TcdA5chDId34KE3E'
-                  />
-                </div>
-                <div>
-                  <h4 className='text-sm font-bold truncate w-40'>
-                    Fasad bo'yog'i "Akryl"
-                  </h4>
-                  <p className='text-xs text-surface-tint font-bold'>
-                    245,000 UZS
-                  </p>
-                </div>
+            {latest?.isLoading ? (
+              <div className='flex justify-center'>
+                <LoaderPinwheel size={30} className='animate-spin' color='#3622F2' />
               </div>
-              <div className='flex gap-3 items-center'>
-                <div className='w-12 h-12 rounded-lg bg-white shrink-0 overflow-hidden'>
-                  <img
-                    className='w-full h-full object-cover'
-                    data-alt='Industrial metal drill set'
-                    src='https://lh3.googleusercontent.com/aida-public/AB6AXuDc4t08IHByR58kQkPMDHSN_k5_F55isZWncCgn3Xv4ozgDu2GlEFEXS2mSxSOcSQj6keM98VudRO2HvsdndsOS1HoyuiSQcPI3KxLp0EoD68nBrJ_kZlap3dP31WM4eTUuO2VeSQI5AUHZX36UPX0BI4SM9kUl_Gg-6EFi5ehojd8Vo-QdcK1xeSF8gu0L0ZU8IfaEK76kjTUHSvecsY-xfPdQoCcYt31Sh9ht8grRTyH3iwIgftbUjZNii-IEWru9Q31hx2YlUpw'
-                  />
-                </div>
-                <div>
-                  <h4 className='text-sm font-bold truncate w-40'>
-                    Professional Drel to'plami
-                  </h4>
-                  <p className='text-xs text-surface-tint font-bold'>
-                    1,200,000 UZS
-                  </p>
-                </div>
+            ) : latest?.data?.length ? (
+              <div className='space-y-4'>
+                {latest.data.slice(0, 4).map((item) => (
+                  <Link
+                    to={`/products/${item?.id}`}
+                    key={item?.id}
+                    className='flex gap-3 items-center'
+                  >
+                    <div className='w-12 h-12 rounded-lg bg-white shrink-0 overflow-hidden'>
+                      <img
+                        className='w-full h-full object-cover'
+                        alt={item?.name}
+                        src={`${import.meta.env.VITE_BASE_URL}${item?.image}`}
+                      />
+                    </div>
+                    <div className='min-w-0'>
+                      <h4 className='text-sm font-bold truncate w-40'>{item?.name}</h4>
+                      <p className='text-xs text-surface-tint font-bold'>
+                        {separator(item?.price, item?.valute?.name)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </div>
+            ) : (
+              <p className='text-sm text-on-surface-variant'>Hozircha mahsulot yo'q</p>
+            )}
           </div>
         </div>
       </section>
