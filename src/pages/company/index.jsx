@@ -73,7 +73,6 @@ function Company() {
     }
     setQuery(query_name, 'asc');
   };
-  console.log(company.data, company?.isFetching);
   const c = company?.data;
   const companyImage = c?.image ? `${import.meta.env.VITE_BASE_URL}${c.image}` : undefined;
 
@@ -133,62 +132,68 @@ function Company() {
                     {company?.data?.name}
                   </h1>
                   <div className='flex flex-wrap items-center gap-6 text-on-surface-variant'>
+                    {/* External/tel destinations — react-router's Link/NavLink
+                        resolve these relative to the current route instead of
+                        actually dialing/opening them, so plain <a> is used. */}
                     {!!company?.data?.phone && (
                       <div className='flex items-center gap-2'>
                         <Phone size={17} />
-                        <NavLink
-                          reloadDocument
-                          to={`tel:${company?.data?.phone}`}
-                          className='text-sm font-medium'
-                        >
+                        <a href={`tel:${company?.data?.phone}`} className='text-sm font-medium'>
                           {company?.data?.phone}
-                        </NavLink>
+                        </a>
                       </div>
                     )}
                     {!!company?.data?.telegram && (
                       <div className='flex items-center gap-2'>
                         <SendHorizontal size={17} />
-                        <NavLink
-                          to={`${company?.data?.telegram?.startsWith('https') ? '' : 'https://t.me/'}${company?.data?.telegram}`}
+                        <a
+                          href={`${company?.data?.telegram?.startsWith('https') ? '' : 'https://t.me/'}${company?.data?.telegram}`}
                           target='_blank'
+                          rel='noopener noreferrer'
                           className='text-sm font-medium'
                         >
                           {company?.data?.telegram?.split('/')?.at(-1)}
-                        </NavLink>
+                        </a>
                       </div>
                     )}
-                    {!!company?.data?.telegram && (
+                    {/* Was gated on `telegram` and built its href from
+                        `telegram` too — a company with Telegram but no
+                        Instagram showed a broken Instagram link, and one
+                        with only Instagram never showed it at all. */}
+                    {!!company?.data?.instagram && (
                       <div className='flex items-center gap-2'>
                         <BookHeart size={15} />
-                        <NavLink
+                        <a
                           target='_blank'
+                          rel='noopener noreferrer'
                           className='text-sm font-medium'
-                          to={`${company?.data?.telegram?.startsWith('https') ? '' : 'https://www.instagram.com/'}${company?.data?.instagram}`}
+                          href={`${company?.data?.instagram?.startsWith('https') ? '' : 'https://www.instagram.com/'}${company?.data?.instagram}`}
                         >
                           {company?.data?.instagram?.split('/')?.at(-1)}
-                        </NavLink>
+                        </a>
                       </div>
                     )}
                     {!!company?.data?.website && (
                       <div className='flex items-center gap-2'>
                         <Globe size={17} />
-                        <NavLink
+                        <a
                           target='_blank'
-                          to={company?.data?.website}
+                          rel='noopener noreferrer'
+                          href={company?.data?.website}
                           className='text-sm font-medium'
                         >
                           {company?.data?.website}
-                        </NavLink>
+                        </a>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className='flex gap-4'>
-                  <NavLink reloadDocument to={`tel:${company?.data?.phone}`}>
+                  <a href={`tel:${company?.data?.phone}`}>
                     <button className='flex-1 md:flex-none px-8 py-3 rounded-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold shadow-xl shadow-primary/20 hover:scale-105 transition-transform'>
                       Bog'lanish
                     </button>
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             </div>
@@ -199,8 +204,11 @@ function Company() {
                   Saralash
                 </button>
                 <Select
-                  onValueChange={(value) => setQuery('category_id', value)}
-                  defaultValue={query.get('category_id')}
+                  // Backend (MainController::company) only reads the plural
+                  // `category_ids[]` array form, never singular `category_id`
+                  // — this dropdown's selection was silently ignored before.
+                  onValueChange={(value) => setQuery('category_ids[0]', value)}
+                  defaultValue={query.get('category_ids[0]')}
                   className='w-full max-w-48'
                 >
                   <SelectTrigger
@@ -209,10 +217,10 @@ function Company() {
                   >
                     <SelectValue
                       placeholder='Katogoriya'
-                      value={query.get('category_id')}
+                      value={query.get('category_ids[0]')}
                     >
                       {categories?.data
-                        ?.filter((cat) => cat?.id == query.get('category_id'))
+                        ?.filter((cat) => cat?.id == query.get('category_ids[0]'))
                         ?.map((cat) => cat?.name)
                         ?.at(0) || 'Kategoriyalar'}
                     </SelectValue>
@@ -246,14 +254,16 @@ function Company() {
                 >
                   Narx:{' '}
                   {query.get('sort_by_price') == 'asc'
-                    ? 'Blanddan pastga'
+                    ? 'Pastdan balandga'
                     : query.get('sort_by_price') == 'desc'
-                      ? 'Pastdan balandga'
+                      ? 'Balandan pastga'
                       : 'Tartiblash'}
                 </button>
                 <button
-                  onClick={() => toggleQuery('is_news')}
-                  className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_news') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+                  // Backend only reads `latest`, never `is_news` — this
+                  // button used to visibly "activate" but never change order.
+                  onClick={() => toggleQuery('latest')}
+                  className={`px-5 py-2 rounded-full transition-colors border ${query.get('latest') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
                 >
                   Yangi qo'shilganlar
                 </button>

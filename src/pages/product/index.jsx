@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import DOMPurify from 'dompurify';
 import {
   LoaderPinwheel,
   BadgeCheck,
@@ -77,6 +78,23 @@ const Product = () => {
     return (
       <div className='h-full flex items-center justify-center'>
         <LoaderPinwheel size={55} className='animate-spin' color='#3622F2' />
+      </div>
+    );
+  }
+
+  // Backend returns HTTP 200 with data:null for a missing/deactivated
+  // product (it never 404s) — without this guard every field access below
+  // (data.price, data.valute, ...) rendered against `undefined`.
+  if (!data) {
+    return (
+      <div className='h-full flex flex-col items-center justify-center gap-4 py-24 text-center'>
+        <p className='text-lg font-bold'>Mahsulot topilmadi</p>
+        <p className='text-on-surface-variant text-sm'>
+          Bu mahsulot o'chirilgan yoki faol emas bo'lishi mumkin.
+        </p>
+        <Link to='/' className='text-surface-tint font-bold hover:underline'>
+          Bosh sahifaga qaytish
+        </Link>
       </div>
     );
   }
@@ -242,52 +260,56 @@ const Product = () => {
                   Do'konga →
                 </Link>
               </p>
+              {/* These are external/tel destinations, not in-app routes —
+                  react-router's <Link> resolves them relative to the current
+                  URL (e.g. "tel:998..." becomes "/products/5/tel:998...")
+                  instead of actually dialing/opening them. Plain <a> tags
+                  navigate correctly. */}
               {!!data?.company?.phone && (
                 <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
                   <Phone size={15} />
-                  <Link
-                    reloadDocument
-                    className='text-blue-500'
-                    to={`tel:${data?.company?.phone}`}
-                  >
+                  <a className='text-blue-500' href={`tel:${data?.company?.phone}`}>
                     {data?.company?.phone}
-                  </Link>
+                  </a>
                 </p>
               )}
               {!!data?.company?.telegram && (
                 <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
                   <Send size={15} />
-                  <Link
+                  <a
                     target='_blank'
+                    rel='noopener noreferrer'
                     className='text-blue-500'
-                    to={`${data?.company?.telegram?.startsWith('https') ? '' : 'https://t.me/'}${data?.company?.telegram}`}
+                    href={`${data?.company?.telegram?.startsWith('https') ? '' : 'https://t.me/'}${data?.company?.telegram}`}
                   >
                     {data?.company?.telegram}
-                  </Link>
+                  </a>
                 </p>
               )}
               {!!data?.company?.instagram && (
                 <p className='text-sm text-red-600 flex items-center gap-2 mb-1'>
                   <BookHeart size={15} />
-                  <Link
+                  <a
                     target='_blank'
+                    rel='noopener noreferrer'
                     className='text-blue-500'
-                    to={`https://www.instagram.com/${data?.company?.instagram}`}
+                    href={`${data?.company?.instagram?.startsWith('https') ? '' : 'https://www.instagram.com/'}${data?.company?.instagram}`}
                   >
                     {data?.company?.instagram}
-                  </Link>
+                  </a>
                 </p>
               )}
               {!!data?.company?.website && (
                 <p className='text-sm text-blue-600 flex items-center gap-2 mb-1'>
                   <LinkLucide size={15} />
-                  <Link
+                  <a
                     target='_blank'
+                    rel='noopener noreferrer'
                     className='text-blue-500'
-                    to={data?.company?.website}
+                    href={data?.company?.website}
                   >
                     vebsayt
-                  </Link>
+                  </a>
                 </p>
               )}
             </div>
@@ -365,8 +387,14 @@ const Product = () => {
                 <CardTitle>Mahsulot haqida</CardTitle>
                 <CardDescription>
                   <div className='prose max-w-none text-gray-700 leading-relaxed'>
+                    {/* Sanitized: description comes from a supplier's
+                        rich-text editor and is rendered here to every
+                        anonymous visitor — without this it was a public
+                        stored-XSS entry point. */}
                     <div
-                      dangerouslySetInnerHTML={{ __html: data?.description }}
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(data?.description || ''),
+                      }}
                     />
                   </div>
                 </CardDescription>

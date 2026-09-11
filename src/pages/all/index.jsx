@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { memo } from 'react';
+import DOMPurify from 'dompurify';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import ProductCard from '../../components/cards/ProductCard';
@@ -120,7 +121,7 @@ function All() {
                 >
                   <span
                     className='material-symbols-outlined text-3xl'
-                    dangerouslySetInnerHTML={{ __html: item?.icon }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item?.icon || '') }}
                   />
                 </div>
                 <div className='text-xs font-semibold text-center w-full uppercase tracking-wider text-on-surface-variant'>
@@ -169,14 +170,16 @@ function All() {
           >
             Narx:{' '}
             {query.get('sort_by_price') == 'asc'
-              ? 'Blanddan pastga'
+              ? 'Pastdan balandga'
               : query.get('sort_by_price') == 'desc'
-                ? 'Pastdan balandga'
+                ? 'Balandan pastga'
                 : 'Tartiblash'}
           </button>
           <button
-            onClick={() => toggleQuery('is_news')}
-            className={`px-5 py-2 rounded-full transition-colors border ${query.get('is_news') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
+            // Backend only reads `latest`, never `is_news` — this button
+            // used to visibly "activate" but never change the result order.
+            onClick={() => toggleQuery('latest')}
+            className={`px-5 py-2 rounded-full transition-colors border ${query.get('latest') ? 'bg-primary-container text-on-primary-container border-primary-container hover:bg-primary-dim/80 hover:text-white' : 'border-outline-variant/30 hover:bg-surface-container-low'} text-sm font-semibold cursor-pointer`}
           >
             Yangi qo'shilganlar
           </button>

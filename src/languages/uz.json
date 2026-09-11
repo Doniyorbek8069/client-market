@@ -1,5 +1,12 @@
 {
   "menus": {
     "all": "Barchasi"
+  },
+  "common": {
+    "alerts": {
+      "error": {
+        "noConnection": "Internet aloqasi yo'q. Iltimos, ulanishni tekshiring."
+      }
+    }
   }
 }
